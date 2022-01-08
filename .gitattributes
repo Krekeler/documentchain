@@ -1,0 +1,4 @@
+* text=auto
+*.ts text
+
+src/clientversion.cpp export-subst
