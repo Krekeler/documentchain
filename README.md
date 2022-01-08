@@ -19,6 +19,13 @@ Default port of archived testnet3 is 41433.
 
 There are no seed nodes defined, you have to use `addnode`.
 
+### Wallet Download
+
+Windows: https://documentchain.org/files/testnet3-archive/dms-core-testnet3-win64.zip
+
+Linux: https://documentchain.org/files/testnet3-archive/dms-core-testnet3-linux.tar.gz
+
+
 ### dms.conf
 
 ```
