@@ -11,7 +11,7 @@ Archive of Documenchain® testnet3, which ran from August 2019 to January 2022. 
 which required special rules in the program code. A testnet should also be as close as possible to the mainnet. 
 For the changeover to deterministic masternodes in 2022, a clean testnet is useful before the mainnet is switched.
 
-The new testnet4 starts at the beginning of 2022.
+The new testnet4 was launched on January 8, 2022.
 
 ## Tips
 
