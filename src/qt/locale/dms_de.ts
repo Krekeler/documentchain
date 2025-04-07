@@ -898,6 +898,10 @@
         <translation>Dauerhaft sperren</translation>
     </message>
     <message>
+        <source>Select unspents</source>
+        <translation>Beträge selektieren</translation>
+    </message>
+    <message>
         <source>Unlock unspent</source>
         <translation>Nicht ausgegebenen Betrag entsperren</translation>
     </message>

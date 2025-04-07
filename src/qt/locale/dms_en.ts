@@ -1132,6 +1132,10 @@
         <translation>Unlock unspent</translation>
     </message>
     <message>
+        <source>Select unspents</source>
+        <translation>Select unspents</translation>
+    </message>
+    <message>
         <location line="+22"/>
         <source>Copy quantity</source>
         <translation>Copy quantity</translation>

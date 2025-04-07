@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
-// Copyright (c) 2018-2022 The Documentchain developers
+// Copyright (c) 2018-2025 The Documentchain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -65,6 +65,7 @@ private:
     QAction *lockAction;
     QAction *lockPermanentAction;
     QAction *unlockAction;
+    QAction *selectNumberOfInputsAction;
 
     bool fHideAdditional{true};
 
@@ -98,6 +99,7 @@ private Q_SLOTS:
     void copyTransactionHash();
     void lockCoin();
     void unlockCoin();
+    void selectNumberOfInputs();
     void clipboardQuantity();
     void clipboardAmount();
     void clipboardFee();

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
 // Copyright (c) 2014-2021 The Dash Core developers
-// Copyright (c) 2018-2022 The Documentchain developers
+// Copyright (c) 2018-2025 The Documentchain developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,6 +27,7 @@
 #include <QCheckBox>
 #include <QCursor>
 #include <QDialogButtonBox>
+#include <QInputDialog>
 #include <QFlags>
 #include <QIcon>
 #include <QSettings>
@@ -73,6 +74,7 @@ CoinControlDialog::CoinControlDialog(CCoinControl& coin_control, WalletModel* _m
              lockAction = new QAction(tr("Lock unspent"), this);                        // we need to enable/disable this
              lockPermanentAction = new QAction(tr("Lock permanently"), this);           // we need to enable/disable this
              unlockAction = new QAction(tr("Unlock unspent"), this);                    // we need to enable/disable this
+             selectNumberOfInputsAction = new QAction(tr("Select unspents") + "...", this); //  - " -
 
     // context menu
     contextMenu = new QMenu(this);
@@ -84,6 +86,8 @@ CoinControlDialog::CoinControlDialog(CCoinControl& coin_control, WalletModel* _m
     contextMenu->addAction(lockAction);
     contextMenu->addAction(lockPermanentAction);
     contextMenu->addAction(unlockAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(selectNumberOfInputsAction);
 
     // context menu signals
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showMenu(QPoint)));
@@ -94,6 +98,7 @@ CoinControlDialog::CoinControlDialog(CCoinControl& coin_control, WalletModel* _m
     connect(lockAction, SIGNAL(triggered()), this, SLOT(lockCoin()));
     connect(lockPermanentAction, SIGNAL(triggered()), this, SLOT(lockCoin()));
     connect(unlockAction, SIGNAL(triggered()), this, SLOT(unlockCoin()));
+    connect(selectNumberOfInputsAction, SIGNAL(triggered()), this, SLOT(selectNumberOfInputs()));
 
     // clipboard actions
     QAction *clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
@@ -140,8 +145,8 @@ CoinControlDialog::CoinControlDialog(CCoinControl& coin_control, WalletModel* _m
     // Toggle lock state
     connect(ui->pushButtonToggleLock, SIGNAL(clicked()), this, SLOT(buttonToggleLockClicked()));
 
-    ui->treeWidget->setColumnWidth(COLUMN_CHECKBOX, 94);
-    ui->treeWidget->setColumnWidth(COLUMN_AMOUNT, 100);
+    ui->treeWidget->setColumnWidth(COLUMN_CHECKBOX, 110);
+    ui->treeWidget->setColumnWidth(COLUMN_AMOUNT, 110);
     ui->treeWidget->setColumnWidth(COLUMN_LABEL, 170);
     ui->treeWidget->setColumnWidth(COLUMN_COINJOIN_ROUNDS, 110);
     ui->treeWidget->setColumnWidth(COLUMN_DATE, 120);
@@ -268,13 +273,15 @@ void CoinControlDialog::showMenu(const QPoint &point)
                 lockPermanentAction->setEnabled(true);
                 unlockAction->setEnabled(false);
             }
+            selectNumberOfInputsAction->setEnabled(false);
         }
-        else // this means click on parent node in tree mode -> disable all
+        else // this means click on parent node in tree mode
         {
             copyTransactionHashAction->setEnabled(false);
             lockAction->setEnabled(false);
             lockPermanentAction->setEnabled(false);
             unlockAction->setEnabled(false);
+            selectNumberOfInputsAction->setEnabled(true);
         }
 
         // show context menu
@@ -361,6 +368,41 @@ void CoinControlDialog::unlockCoin()
             fileLockedCoins.resize(0);
             txtstream << dest;
             fileLockedCoins.close();
+        }
+    }
+}
+
+// context menu action: select number of inputs
+void CoinControlDialog::selectNumberOfInputs()
+{
+    QTreeWidgetItem *currentItem = ui->treeWidget->currentItem();
+    if (currentItem) {
+        int number = 600;
+        int childCnt = currentItem->childCount();
+        if (number > childCnt)
+            number = childCnt;
+
+        bool ok;
+        number = QInputDialog::getInt(nullptr,
+                                      tr("Select unspents"),
+                                      tr("Count"),
+                                      number,
+                                      1,
+                                      childCnt,
+                                      5,
+                                      &ok);
+        if (ok) {
+            int selectedCnt = 0;
+            ui->treeWidget->setEnabled(false);
+            for (int i = 0; i < childCnt && selectedCnt < number; ++i) {
+                QTreeWidgetItem *childItem = currentItem->child(i);
+                if (childItem && (childItem->flags() & (Qt::ItemIsUserCheckable && !childItem->isDisabled()))) {
+                    childItem->setCheckState(0, Qt::Checked);
+                    selectedCnt++;
+                }
+            }
+            ui->treeWidget->setEnabled(true);
+            CoinControlDialog::updateLabels(m_coin_control, model, this);
         }
     }
 }
